@@ -29,18 +29,14 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import com.qualcomm.robotcore.hardware.IMU;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name="TeleOP", group="Linear OpMode")
+@TeleOp(name="TeleOp", group="Main")
 public class TeleOP extends LinearOpMode {
     @Override
     public void runOpMode() {
@@ -63,7 +59,6 @@ public class TeleOP extends LinearOpMode {
         FL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         BL.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         FR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        BR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         BR.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // slides
@@ -79,11 +74,13 @@ public class TeleOP extends LinearOpMode {
 
         LS.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         RS.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        IS.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        IS.setTargetPosition(0);
+        IS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
 
         // outtake
-        Servo outtakeClaw = hardwareMap.get(Servo.class, "Outtake Grasp");
         Servo outtakeFlip = hardwareMap.get(Servo.class, "Outtake Flip");
+        Servo outtakeClaw = hardwareMap.get(Servo.class, "Outtake Grasp");
 
         // intake
         Servo intakeSwivel = hardwareMap.get(Servo.class, "Intake Swivel");
@@ -103,8 +100,8 @@ public class TeleOP extends LinearOpMode {
         double intakePower = 0;
         double graspPos = 1;
         double swivelPos = 0;
-        int intakeOut = 500;
-        int intakeIn = 50;
+        int intakeOut = -500;
+        int intakeIn = -50;
 
         double timeSinceClawToggle = runtime.seconds();
         double timeSinceFlipToggle = runtime.seconds();
@@ -137,15 +134,15 @@ public class TeleOP extends LinearOpMode {
 
             int lsPosition = LS.getCurrentPosition();
             int rsPosition = RS.getCurrentPosition();
-            int isPosition = BR.getCurrentPosition();
+            int isPosition = IS.getCurrentPosition();
 
+            IS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             if (intakeSlidePower < 0) {
                 IS.setTargetPosition(intakeOut);
-                IS.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            } else if (intakeSlidePower > 0) {
+            }
+            if (intakeSlidePower > 0) {
                 IS.setTargetPosition(intakeIn);
-                IS.setMode(DcMotor.RunMode.RUN_TO_POSITION);            }
+            }
 
             if (((lsPosition < maxSlidePos) || (rsPosition < maxSlidePos)) && slidePower >= 0) {
                 LS.setPower(0.1);
