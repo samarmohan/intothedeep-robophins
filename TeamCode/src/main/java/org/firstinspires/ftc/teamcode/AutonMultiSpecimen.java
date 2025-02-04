@@ -2,11 +2,13 @@ package org.firstinspires.ftc.teamcode;
 
 import androidx.annotation.NonNull;
 
+import com.acmerobotics.dashboard.FtcDashboard;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.SequentialAction;
+import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -134,43 +136,65 @@ public class AutonMultiSpecimen extends LinearOpMode {
 
     @Override
     public void runOpMode() {
-        Pose2d beginPose = new Pose2d(0, 0, 0);
+        Pose2d beginPose = new Pose2d(10, -62, Math.PI / 2 );
         SparkFunOTOSDrive drive = new SparkFunOTOSDrive(hardwareMap, beginPose);
         Slides slides = new Slides(hardwareMap);
         Claw claw = new Claw(hardwareMap);
         Flip flip = new Flip(hardwareMap);
 
+        // close claw on init
         Actions.runBlocking(claw.clawClose());
 
-        Action forward = drive.actionBuilder(beginPose)
-                .lineToX(-30)
+        Action toSubmersible = drive.actionBuilder(beginPose)
+                .lineToY(-30)
                 .build();
 
-        Action back = drive.actionBuilder(beginPose)
-                .lineToX(10)
+        Action backUp = drive.actionBuilder(beginPose)
+                .lineToY(10)
                 .build();
 
-        Action wait = drive.actionBuilder(beginPose).waitSeconds(2).build();
-        Action wait15 = drive.actionBuilder(beginPose).waitSeconds(15).build();
+        Action wait2 = drive.actionBuilder(beginPose).waitSeconds(2).build();
 
+        Action placeSpecimen = new ParallelAction(
+                slides.slidesUp(),
+                new SequentialAction(
+                        flip.flipClose(),
+                        toSubmersible,
+                        wait2,
+                        claw.clawOpen(),
+                        backUp,
+                        claw.clawClose(),
+                        wait2,
+                        backUp
+                )
+        );
+
+        Action pusher = drive.actionBuilder(beginPose)
+                //.splineTo(new Vector2d(38, -13), Math.PI /2 )
+                .strafeTo(new Vector2d(40, -62))
+//                .strafeTo(new Vector2d(47, -53))
+//                .strafeTo(new Vector2d(47, -13))
+//                .strafeTo(new Vector2d(56, -13))
+//                .strafeTo(new Vector2d(56, -53))
+//                .strafeTo(new Vector2d(56, -13))
+//                .strafeTo(new Vector2d(65, -13))
+//                .strafeTo(new Vector2d(65, -53))
+                .build();
 
         waitForStart();
         telemetry.update();
         if (isStopRequested()) return;
 
         Actions.runBlocking(
-                new ParallelAction(slides.slidesUp(),
-                    new SequentialAction(
-                            flip.flipClose(),
-                            forward,
-                            wait,
-                            claw.clawOpen(),
-                            back,
-                            claw.clawClose(),
-                            flip.flipIn(),
-                            wait
-                    )
+                new SequentialAction(
+                        //placeSpecimen,
+                        pusher
                 )
         );
+
+        TelemetryPacket packet = new TelemetryPacket();
+        packet.fieldOverlay().setStroke("#3F51B5");
+        Drawing.drawRobot(packet.fieldOverlay(), drive.pose);
+        FtcDashboard.getInstance().sendTelemetryPacket(packet);
     }
 }
