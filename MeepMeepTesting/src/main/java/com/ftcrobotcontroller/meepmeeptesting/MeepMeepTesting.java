@@ -12,32 +12,12 @@ public class MeepMeepTesting {
 
         RoadRunnerBotEntity myBot = new DefaultBotBuilder(meepMeep)
                 // Set bot constraints: maxVel, maxAccel, maxAngVel, maxAngAccel, track width
-                .setConstraints(100, 100, Math.toRadians(180), Math.toRadians(180), 15)
+                .setConstraints(50, 50, Math.toRadians(180), Math.toRadians(180), 15.213475775929112)
                 .build();
 
-        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(7.5, -62, Math.toRadians(90) ))
-                // go to first sample
-                .splineTo(new Vector2d(38, -13), Math.toRadians(90))
-                // push all 3 back to human player station
-                .strafeTo(new Vector2d(47, -13))
-                .strafeTo(new Vector2d(47, -53))
-                .strafeTo(new Vector2d(47, -13))
-                .strafeTo(new Vector2d(56, -13))
-                .strafeTo(new Vector2d(56, -53))
-                .strafeTo(new Vector2d(56, -13))
-                .strafeTo(new Vector2d(65, -13))
-                .strafeTo(new Vector2d(65, -53))
-                // go to clip first sample and hang it
-                .splineTo(new Vector2d(40, -59), Math.toRadians(270))
-                .waitSeconds(2)
-                .splineTo(new Vector2d(4, -45), Math.toRadians(270))
-                .strafeTo(new Vector2d(4, -32))
-                .waitSeconds(1)
-                // return back for second sample, same thing
-                .splineTo(new Vector2d(40, -59), Math.toRadians(90))
-                .waitSeconds(2)
-                .splineTo(new Vector2d(4, -45), Math.toRadians(270))
-                .strafeTo(new Vector2d(4, -32))
+        myBot.runAction(myBot.getDrive().actionBuilder(new Pose2d(0, 0, Math.toRadians(-90)))
+                .splineTo(new Vector2d(45, 10), Math.toRadians(-90))
+
                 .build());
 
         meepMeep.setBackground(MeepMeep.Background.FIELD_INTO_THE_DEEP_OFFICIAL)
