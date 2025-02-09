@@ -17,8 +17,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "AutonTwoSpecimen", group = "Specimen")
-public class AutonTwoSpecimen extends LinearOpMode {
+@Autonomous(name = "AutonTest", group = "Test")
+public class AutonTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         Pose2d beginPose = new Pose2d(0, 0, Math.toRadians(-90));
@@ -29,61 +29,16 @@ public class AutonTwoSpecimen extends LinearOpMode {
         IntakeFlip intakeFlip = new IntakeFlip(hardwareMap);
         IntakeSlide intakeSlide = new IntakeSlide(hardwareMap);
 
-        int SLIDES_UP = -1725;
-        int SLIDES_GRAB = -80;
 
-        // close claw on init
-        Actions.runBlocking(new SequentialAction(claw.clawClose(), intakeFlip.intakeFlipUp()));
-
-        Action twoSpecimen = new ParallelAction(
-                slides.slidesUp(SLIDES_UP),
-                intakeSlide.keepIntakeIn(),
+        Action test = new ParallelAction(
+                slides.slidesUp(-1700),
                 drive.actionBuilder(beginPose)
-                        // first specimen
-                        // wait for slides up
-                        .waitSeconds(0.5)
-                        .stopAndAdd(outtakeFlip.outtakeFlipOpen())
-                        // place preloaded specimen on bar
-                        .strafeTo(new Vector2d(0, 33))
-                        .stopAndAdd(claw.clawOpen())
-                        // move back and away from submersible
-                        .strafeTo(new Vector2d(0, 20))
-                        .stopAndAdd(slides.slidesDown(0))
-                        .strafeToSplineHeading(new Vector2d(35, 20), Math.toRadians(0))
-                        // go past samples
-                        .strafeTo(new Vector2d(35, 55))
-                        // move forward in front of sample
-                        .strafeTo(new Vector2d(45, 55))
-                        // push sample back to human player and turn
-                        .strafeTo(new Vector2d(55, 10))
-                        .turnTo(Math.toRadians(90))
-                        // TODO ONLY FOR PAYTON
-                        .strafeTo(new Vector2d(45, 17))
-                        .waitSeconds(1.5)
-                        // move away from sample to not run over it REALLL
-                        //.strafeTo(new Vector2d(45, 10))
-                        .stopAndAdd(slides.slidesUp(SLIDES_GRAB))
-                        // wait for human player to align
-                        .waitSeconds(0.5)
-                        .strafeTo(new Vector2d(45, 3))
-                        .waitSeconds(0.75)
-                        // go to specimen
-                        .stopAndAdd(claw.clawClose())
-                        .stopAndAdd(slides.slidesUp(SLIDES_UP-50))
-                        // turn and line up with submersible
-                        .strafeToSplineHeading(new Vector2d(5, 20), Math.toRadians(-90))
-                        // put specimen on bar
-                        .strafeTo(new Vector2d(5, 35))
-                        .stopAndAdd(claw.clawOpen())
-
-                        // park
-                        .strafeTo(new Vector2d(5, 10))
-                        .strafeTo(new Vector2d(40, 10))
-                        // cleanup
-                        .stopAndAdd(claw.clawClose())
-                        .stopAndAdd(outtakeFlip.outtakeFlipIn())
-                        .waitSeconds(1)
-                        .stopAndAdd(slides.slidesDown(0))
+                        .afterTime(1, slides.slidesUp(-1700))
+                        .afterTime(0.5, outtakeFlip.outtakeFlipIn())
+                        .strafeTo(new Vector2d(0, 40))
+                        .strafeTo(new Vector2d(0, 10))
+                        .afterTime(0.5, slides.slidesDown(0))
+                        .strafeTo(new Vector2d(20, 10))
                         .build()
         );
 
@@ -92,7 +47,7 @@ public class AutonTwoSpecimen extends LinearOpMode {
         if (isStopRequested()) return;
 
         Actions.runBlocking(
-                twoSpecimen
+                test
         );
 
         TelemetryPacket packet = new TelemetryPacket();

@@ -17,7 +17,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "AutonMultiSpecimen", group = "Specimen")
+@Autonomous(name = "AutonThreeSpecimen", group = "Specimen")
 public class AutonThreeSpecimen extends LinearOpMode {
     @Override
     public void runOpMode() {

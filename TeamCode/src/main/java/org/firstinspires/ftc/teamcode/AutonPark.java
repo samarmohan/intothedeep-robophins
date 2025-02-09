@@ -16,7 +16,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name="AutonPark", group="Pakr")
+@Autonomous(name="AutonPark", group="Park")
 public class AutonPark extends LinearOpMode {
 
 
