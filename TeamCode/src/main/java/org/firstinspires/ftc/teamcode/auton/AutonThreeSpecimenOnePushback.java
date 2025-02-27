@@ -64,7 +64,7 @@ public class AutonThreeSpecimenOnePushback extends LinearOpMode {
                         .afterTime(0, verticalSlides.slidesUp(SLIDES_GRAB))
                         .waitSeconds(WAIT_TO_ALIGN)
                         // wait for human player to align
-                        .strafeTo(new Vector2d(37, 4))
+                        .strafeTo(new Vector2d(37, 6))
                         .waitSeconds(WAIT_TO_GRAB)
                         // go to specimen
                         .stopAndAdd(claw.clawClose())
@@ -79,13 +79,13 @@ public class AutonThreeSpecimenOnePushback extends LinearOpMode {
 
                         // THIRD
 
-                        .strafeTo(new Vector2d(5, 20))
+                        .strafeTo(new Vector2d(3, 20))
                         .afterTime(0, verticalSlides.slidesDown(0))
                         .strafeToSplineHeading(new Vector2d(37, 17), Math.toRadians(90))
                         .afterTime(0, verticalSlides.slidesUp(SLIDES_GRAB))
                         .waitSeconds(WAIT_TO_ALIGN)
                         // wait for human player to align
-                        .strafeTo(new Vector2d(37, 4))
+                        .strafeTo(new Vector2d(37, 6))
                         .waitSeconds(WAIT_TO_GRAB)
                         // go to specimen
                         .stopAndAdd(claw.clawClose())
@@ -93,7 +93,7 @@ public class AutonThreeSpecimenOnePushback extends LinearOpMode {
                         // turn and line up with submersible
                         .strafeToSplineHeading(new Vector2d(5, 20), Math.toRadians(-90))
                         // put specimen on bar
-                        .strafeTo(new Vector2d(5, 32))
+                        .strafeTo(new Vector2d(3, 34))
                         .stopAndAdd(claw.clawOpen())
                         .afterTime(0, claw.clawClose())
                         .strafeTo(new Vector2d(5, 10))

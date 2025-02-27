@@ -25,7 +25,7 @@ public class OuttakeFlip {
     public class OuttakeFlipOut implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket packet) {
-            outtakeFlip.setPosition(0.3);
+            outtakeFlip.setPosition(0.4);
             return false;
         }
     }
