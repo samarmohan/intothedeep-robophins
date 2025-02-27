@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auton;
 
 import androidx.annotation.NonNull;
 
@@ -17,8 +17,11 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Autonomous(name = "AutonTwoSpecimen", group = "Specimen")
-public class AutonTwoSpecimen extends LinearOpMode {
+import org.firstinspires.ftc.teamcode.Drawing;
+import org.firstinspires.ftc.teamcode.SparkFunOTOSDrive;
+
+@Autonomous(name = "AutonTest", group = "Specimen")
+public class AutonTest extends LinearOpMode {
     @Override
     public void runOpMode() {
         Pose2d beginPose = new Pose2d(0, 0, Math.toRadians(-90));
@@ -26,64 +29,20 @@ public class AutonTwoSpecimen extends LinearOpMode {
         Slides slides = new Slides(hardwareMap);
         Claw claw = new Claw(hardwareMap);
         OuttakeFlip outtakeFlip = new OuttakeFlip(hardwareMap);
-        IntakeFlip intakeFlip = new IntakeFlip(hardwareMap);
         IntakeSlide intakeSlide = new IntakeSlide(hardwareMap);
 
-        int SLIDES_UP = -1725;
-        int SLIDES_GRAB = -80;
+        int SLIDES_UP = 1725;
+        int SLIDES_GRAB = 80;
 
         // close claw on init
-        Actions.runBlocking(new SequentialAction(claw.clawClose(), intakeFlip.intakeFlipUp()));
+        Actions.runBlocking(new SequentialAction(claw.clawClose()));
 
-        Action twoSpecimen = new ParallelAction(
-                slides.slidesUp(SLIDES_UP),
+        Action action = new ParallelAction(
                 intakeSlide.keepIntakeIn(),
                 drive.actionBuilder(beginPose)
-                        // first specimen
-                        // wait for slides up
-                        .waitSeconds(0.5)
-                        .stopAndAdd(outtakeFlip.outtakeFlipOpen())
-                        // place preloaded specimen on bar
-                        .strafeTo(new Vector2d(0, 33))
-                        .stopAndAdd(claw.clawOpen())
-                        // move back and away from submersible
                         .strafeTo(new Vector2d(0, 20))
-                        .stopAndAdd(slides.slidesDown(0))
-                        .strafeToSplineHeading(new Vector2d(35, 20), Math.toRadians(0))
-                        // go past samples
-                        .strafeTo(new Vector2d(35, 55))
-                        // move forward in front of sample
-                        .strafeTo(new Vector2d(45, 55))
-                        // push sample back to human player and turn
-                        .strafeTo(new Vector2d(55, 10))
-                        .turnTo(Math.toRadians(90))
-                        // TODO ONLY FOR PAYTON
-                        .strafeTo(new Vector2d(45, 17))
-                        .waitSeconds(1.5)
-                        // move away from sample to not run over it REALLL
-                        //.strafeTo(new Vector2d(45, 10))
-                        .stopAndAdd(slides.slidesUp(SLIDES_GRAB))
-                        // wait for human player to align
-                        .waitSeconds(0.5)
-                        .strafeTo(new Vector2d(45, 3))
-                        .waitSeconds(0.75)
-                        // go to specimen
-                        .stopAndAdd(claw.clawClose())
-                        .stopAndAdd(slides.slidesUp(SLIDES_UP-50))
-                        // turn and line up with submersible
-                        .strafeToSplineHeading(new Vector2d(5, 20), Math.toRadians(-90))
-                        // put specimen on bar
-                        .strafeTo(new Vector2d(5, 35))
-                        .stopAndAdd(claw.clawOpen())
-
-                        // park
-                        .strafeTo(new Vector2d(5, 10))
-                        .strafeTo(new Vector2d(40, 10))
-                        // cleanup
-                        .stopAndAdd(claw.clawClose())
-                        .stopAndAdd(outtakeFlip.outtakeFlipIn())
-                        .waitSeconds(1)
-                        .stopAndAdd(slides.slidesDown(0))
+                        .afterTime(0, slides.slidesUp(1700))
+                        .strafeTo(new Vector2d(70, 0))
                         .build()
         );
 
@@ -92,36 +51,13 @@ public class AutonTwoSpecimen extends LinearOpMode {
         if (isStopRequested()) return;
 
         Actions.runBlocking(
-                twoSpecimen
+                action
         );
 
         TelemetryPacket packet = new TelemetryPacket();
         packet.fieldOverlay().setStroke("#3F51B5");
         Drawing.drawRobot(packet.fieldOverlay(), drive.pose);
         FtcDashboard.getInstance().sendTelemetryPacket(packet);
-    }
-
-    public static class IntakeFlip {
-        Servo intakeFlipRight;
-        Servo intakeFlipLeft;
-
-        public IntakeFlip(HardwareMap hardwareMap) {
-            intakeFlipRight = hardwareMap.get(Servo.class, "Intake Flip Right");
-            intakeFlipLeft = hardwareMap.get(Servo.class, "Intake Flip Left");
-        }
-
-        public Action intakeFlipUp() {
-            return new IntakeFlipUp();
-        }
-
-        public class IntakeFlipUp implements Action {
-            @Override
-            public boolean run(@NonNull TelemetryPacket packet) {
-                intakeFlipRight.setPosition(0.5);
-                intakeFlipLeft.setPosition(0.5);
-                return false;
-            }
-        }
     }
 
     public static class OuttakeFlip {
@@ -131,15 +67,15 @@ public class AutonTwoSpecimen extends LinearOpMode {
             outtakeFlip = hardwareMap.get(Servo.class, "Outtake Flip");
         }
 
-        public Action outtakeFlipOpen() {
-            return new OuttakeFlipOpen();
+        public Action outtakeFlipOut() {
+            return new OuttakeFlipOut();
         }
 
         public Action outtakeFlipIn() {
             return new OuttakeFlipIn();
         }
 
-        public class OuttakeFlipOpen implements Action {
+        public class OuttakeFlipOut implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
                 outtakeFlip.setPosition(0);
@@ -237,8 +173,7 @@ public class AutonTwoSpecimen extends LinearOpMode {
                 packet.put("leftS", lsPosition);
                 packet.put("rspos", rsPosition);
 
-                // TODO tune for proper position
-                if (lsPosition > toPos || rsPosition > toPos) {
+                if (lsPosition < toPos || rsPosition < toPos) {
                     return true;
                 } else {
                     leftSlide.setPower(0.1);
@@ -266,7 +201,11 @@ public class AutonTwoSpecimen extends LinearOpMode {
                 packet.put("lspos", lsPosition);
                 packet.put("rspos", rsPosition);
 
-                return lsPosition < toPos || rsPosition < toPos;
+                if (lsPosition > toPos || rsPosition > toPos) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
     }
@@ -285,7 +224,7 @@ public class AutonTwoSpecimen extends LinearOpMode {
         public class KeepIntakeIn implements Action {
             @Override
             public boolean run(@NonNull TelemetryPacket packet) {
-                intakeSlide.setPower(0.2);
+                intakeSlide.setPower(0.1);
 
                 int ispos = intakeSlide.getCurrentPosition();
 
