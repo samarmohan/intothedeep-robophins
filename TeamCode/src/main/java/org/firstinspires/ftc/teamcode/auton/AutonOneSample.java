@@ -51,6 +51,7 @@ public class AutonOneSample extends LinearOpMode {
                         .stopAndAdd(claw.clawOpen())
                         .waitSeconds(1)
                         .strafeTo(new Vector2d(13, -20))
+                        .turn(Math.toRadians(90))
                         // cleanup
                         .stopAndAdd(claw.clawClose())
                         .stopAndAdd(outtakeFlip.outtakeFlipIn())

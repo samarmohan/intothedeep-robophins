@@ -64,11 +64,12 @@ public class AutonThreeSpecimenOnePushback extends LinearOpMode {
                         .afterTime(0, verticalSlides.slidesUp(SLIDES_GRAB))
                         .waitSeconds(WAIT_TO_ALIGN)
                         // wait for human player to align
-                        .strafeTo(new Vector2d(37, 6))
+                        .strafeTo(new Vector2d(37, 4))
                         .waitSeconds(WAIT_TO_GRAB)
                         // go to specimen
                         .stopAndAdd(claw.clawClose())
-                        .stopAndAdd(verticalSlides.slidesUp(SLIDES_UP+50))
+                        .waitSeconds(0.2)
+                        .stopAndAdd(verticalSlides.slidesUp(SLIDES_UP+40))
                         // turn and line up with submersible
                         .strafeToSplineHeading(new Vector2d(5, 20), Math.toRadians(-90))
                         // put specimen on bar
@@ -85,22 +86,24 @@ public class AutonThreeSpecimenOnePushback extends LinearOpMode {
                         .afterTime(0, verticalSlides.slidesUp(SLIDES_GRAB))
                         .waitSeconds(WAIT_TO_ALIGN)
                         // wait for human player to align
-                        .strafeTo(new Vector2d(37, 6))
+                        .strafeTo(new Vector2d(37, 4))
                         .waitSeconds(WAIT_TO_GRAB)
                         // go to specimen
                         .stopAndAdd(claw.clawClose())
-                        .stopAndAdd(verticalSlides.slidesUp(SLIDES_UP+50))
+                        .waitSeconds(0.2)
+                        .stopAndAdd(verticalSlides.slidesUp(SLIDES_UP+40))
                         // turn and line up with submersible
-                        .strafeToSplineHeading(new Vector2d(5, 20), Math.toRadians(-90))
+                        .strafeToSplineHeading(new Vector2d(3, 20), Math.toRadians(-90))
                         // put specimen on bar
                         .strafeTo(new Vector2d(3, 34))
                         .stopAndAdd(claw.clawOpen())
-                        .afterTime(0, claw.clawClose())
-                        .strafeTo(new Vector2d(5, 10))
+                        .strafeTo(new Vector2d(3, 10))
                         // cleanup
+                        .stopAndAdd(claw.clawClose())
                         .stopAndAdd(outtakeFlip.outtakeFlipIn())
                         .waitSeconds(0.5)
                         .stopAndAdd(verticalSlides.slidesDown(0))
+                        .turnTo(Math.toRadians(90))
                         .build()
         );
 

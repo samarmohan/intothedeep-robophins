@@ -38,6 +38,7 @@ public class AutonTest extends LinearOpMode {
         Actions.runBlocking(new SequentialAction(claw.clawClose()));
 
         Action action = new ParallelAction(
+                slides.slidesUp(100),
                 intakeSlide.keepIntakeIn(),
                 drive.actionBuilder(beginPose)
                         .strafeTo(new Vector2d(0, 20))
